@@ -15,18 +15,14 @@ namespace LeaderboardFix
             HarmonyLib.Harmony harmony = new("de.MOPSKATER.LeaderboardFix");
 
             MethodInfo target = typeof(LeaderboardIntegrationSteam).GetMethod("DownloadEntries");
-            Debug.Log(target);
             HarmonyMethod patch = new(typeof(Main).GetMethod("PreDownloadEntries"));
             harmony.Patch(target, patch);
 
             target = typeof(Leaderboards).GetMethod("OnLeftArrowPressed");
-            Debug.Log(target);
             patch = new(typeof(Main).GetMethod("PreOnLeftArrowPressed"));
             harmony.Patch(target, patch);
 
             target = typeof(Leaderboards).GetMethod("OnRightArrowPressed");
-            Debug.Log(target);
-            //Debug.Log(typeof(Main).GetMethod("PreOnRightArrowPressed"));
             patch = new(typeof(Main).GetMethod("PreOnRightArrowPressed"));
             harmony.Patch(target, patch);
         }
