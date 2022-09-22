@@ -31,14 +31,12 @@ namespace LeaderboardFix
         {
             if (page > 0)
                 page--;
-            Debug.Log("--Current Page: " + page);
             return true;
         }
 
         public static bool PreOnRightArrowPressed()
         {
             page++;
-            Debug.Log("++Current Page: " + page);
             return true;
         }
 
@@ -46,25 +44,16 @@ namespace LeaderboardFix
         {
             _leaderboadsRefInfo = typeof(LeaderboardIntegrationSteam).GetField("leaderboardsRef", BindingFlags.NonPublic | BindingFlags.Static);
 
-
-            Debug.Log("1");
             if (!friend) return true;
-            Debug.Log("2");
 
             if (!SteamManager.Initialized) return false;
 
-            Debug.Log("3");
-
             ScoreData[] array = new ScoreData[10];
             for (int i = 0; i < array.Length; i++)
-            {
                 array[i] = LeaderboardIntegrationSteam.GetScoreDataAtGlobalRank(i + 1 + (page * 10), true, globalNeonRankings);
-                Debug.Log(array[i]._username);
-            }
 
             Leaderboards leaderboard = (Leaderboards)_leaderboadsRefInfo.GetValue(null);
             leaderboard.DisplayScores_AsyncRecieve(array, true);
-            Debug.Log("4");
             return false;
         }
     }
