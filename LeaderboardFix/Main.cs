@@ -1,13 +1,15 @@
 ﻿using HarmonyLib;
 using MelonLoader;
 using System.Reflection;
+using static MelonLoader.MelonLogger;
 
 namespace LeaderboardFix
 {
     public class Main : MelonMod
     {
         private static int page = 0;
-        private static FieldInfo _leaderboadsRefInfo;
+        private static readonly FieldInfo _leaderboadsRefInfo = typeof(LeaderboardIntegrationSteam).GetField("leaderboardsRef", BindingFlags.NonPublic | BindingFlags.Static);
+        private static readonly FieldInfo friendsFilter = typeof(Leaderboards).GetField("friendsFilter", BindingFlags.NonPublic | BindingFlags.Instance);
 
         public override void OnApplicationLateStart()
         {
@@ -26,23 +28,23 @@ namespace LeaderboardFix
             harmony.Patch(target, patch);
         }
 
-        public static bool PreOnLeftArrowPressed()
+        public static bool PreOnLeftArrowPressed(Leaderboards __instance)
         {
-            if (page > 0)
+            
+            if ((bool) friendsFilter.GetValue(__instance) && page > 0)
                 page--;
             return true;
         }
 
-        public static bool PreOnRightArrowPressed()
+        public static bool PreOnRightArrowPressed(Leaderboards __instance)
         {
-            page++;
+            if ((bool)friendsFilter.GetValue(__instance))
+                page++;
             return true;
         }
 
         public static bool PreDownloadEntries(ref int start, ref int end, ref bool friend, ref bool globalNeonRankings)
         {
-            _leaderboadsRefInfo = typeof(LeaderboardIntegrationSteam).GetField("leaderboardsRef", BindingFlags.NonPublic | BindingFlags.Static);
-
             if (!friend) return true;
 
             if (!SteamManager.Initialized) return false;
